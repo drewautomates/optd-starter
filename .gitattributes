@@ -1,0 +1,20 @@
+# Normalize line endings: keep LF in the repo, regardless of OS checkout.
+* text=auto eol=lf
+
+# Source / text files — always LF
+*.pine   text eol=lf
+*.py     text eol=lf
+*.md     text eol=lf
+*.sql    text eol=lf
+*.json   text eol=lf
+*.txt    text eol=lf
+*.ipynb  text eol=lf
+
+# Binary / data files — never touch
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.parquet binary
+*.scid   binary
+*.zip    binary

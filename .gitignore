@@ -1,0 +1,21 @@
+# Market data — never commit
+data/tick/
+data/cache/
+*.parquet
+*.scid
+*.csv
+
+# Backtest outputs
+backtests/runs/*
+!backtests/runs/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db

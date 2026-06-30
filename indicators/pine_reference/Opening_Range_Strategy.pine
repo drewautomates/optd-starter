@@ -1,0 +1,199 @@
+// =============================================================================
+// Opening Range (ORB) — STRATEGY  (pairs with Opening_Range.pine indicator)
+// =============================================================================
+// Same OR detection as the indicator. The OR high/low LEVELS are timeframe-
+// invariant, so they are computed INLINE on the chart timeframe — this makes the
+// strategy's lines draw IDENTICALLY to the indicator's at all times. Only the
+// "N consecutive closes outside" COUNTER runs on the fixed Signal timeframe.
+//
+// Trades the N-consecutive-close breakout:
+//   - N closes above ORH  -> long
+//   - N closes below ORL  -> short
+//
+// RISK MODEL — R = opening-range width (ORH - ORL):
+//   Long  : anchor ORH,  stop = ORH - stopR*R  (stopR=1 => ORL),  target = ORH + rTarget*R
+//   Short : anchor ORL,  stop = ORL + stopR*R  (stopR=1 => ORH),  target = ORL - rTarget*R
+//   The default stop is exactly 1R = the opening-range width, anchored to the
+//   rails — identical regardless of chart timeframe.
+//
+// Flat by the end of the Regular Session (no overnight risk).
+//
+// NOTE: TradingView's Strategy Tester is a FIRST SNIFF, not proof. It does not
+// model real fills, costs, walk-forward, or selection bias. Validate edge in the
+// Python pipeline.
+// Author: OPTD  —  Pine Script v6
+// =============================================================================
+//@version=6
+// margin_long/short = 5 (%) is REQUIRED for futures: with the default (0) the
+// emulator demands the FULL notional in cash (~$600k for 1 NQ contract), so a
+// $50k account can't afford a single contract and every order is silently
+// rejected -> "This report requires trade data". 5% (~$30k for NQ) lets 1
+// contract fill on a $50k account. (P&L per trade is unaffected by margin.)
+strategy("OPTD — Opening Range (ORB) Strategy", shorttitle="OPTD ORB Strat", overlay=true,
+     default_qty_type=strategy.fixed, default_qty_value=1,
+     pyramiding=0, calc_on_every_tick=false,
+     commission_type=strategy.commission.cash_per_contract, commission_value=2.50,
+     slippage=2, initial_capital=50000, margin_long=5, margin_short=5,
+     max_lines_count=500, max_labels_count=500)
+
+// ----------------------------------------------------------------------------
+// INPUTS  (kept in parity with the indicator)
+// ----------------------------------------------------------------------------
+g_time   = "Sessions (EST)"
+orSess   = input.session("0930-1000", "Opening Range Time (EST)", group=g_time, tooltip="Window that builds the range.")
+rthSess  = input.session("0930-1600", "Regular Session Time (EST)", group=g_time, tooltip="Window trades are allowed in. Position is flattened at its end.")
+tz       = input.string("America/New_York", "Timezone", options=["America/New_York", "America/Chicago", "America/Los_Angeles", "UTC"], group=g_time)
+
+g_sig    = "Signal"
+sigTF    = input.timeframe("1", "Signal timeframe", group=g_sig, tooltip="Timeframe the breakout COUNTER runs on. The range levels are timeframe-invariant; only the consecutive-close count uses this. Independent of the chart timeframe.")
+nCloses  = input.int(1, "Consecutive closes outside range for signal", minval=1, maxval=50, group=g_sig, tooltip="Consecutive signal-TF closes beyond ORH/ORL to trigger entry. A close back inside resets the count.")
+
+g_trade  = "Trade Management"
+dir      = input.string("Both", "Direction", options=["Both", "Long only", "Short only"], group=g_trade)
+stopR    = input.float(1.0, "Stop (R = OR width)", minval=0.25, step=0.25, group=g_trade, tooltip="Stop distance as a multiple of the opening-range width, anchored to the breakout rail. 1.0 = stop at the opposite rail = exactly 1R.")
+rTarget  = input.float(2.0, "Target (R multiple)", minval=0.0, step=0.25, group=g_trade, tooltip="Profit target as a multiple of R (OR width), measured from the breakout rail. 0 = no fixed target (session exit only).")
+oneTrade = input.bool(true, "Max one trade per session", group=g_trade)
+flatEOD  = input.bool(true, "Flatten at end of session", group=g_trade)
+
+g_style  = "Style"
+colH     = input.color(color.new(#2962ff, 0), "ORH", group=g_style)
+colL     = input.color(color.new(#e91e63, 0), "ORL", group=g_style)
+colM     = input.color(color.new(#787b86, 0), "ORM", group=g_style)
+showFill = input.bool(true, "Shade range", group=g_style)
+
+// ----------------------------------------------------------------------------
+// OR LEVELS — computed INLINE on the chart timeframe (timeframe-invariant).
+// Identical code to the indicator, so the lines match exactly.
+// ----------------------------------------------------------------------------
+inOR  = not na(time(timeframe.period, orSess,  tz))
+inRTH = not na(time(timeframe.period, rthSess, tz))
+orOpen  = inOR  and not inOR[1]
+orClose = not inOR and inOR[1]
+newDay  = inRTH and not inRTH[1]
+
+var float orH = na
+var float orL = na
+var bool  orDone = false
+
+if orOpen
+    orH := high
+    orL := low
+    orDone := false
+else if inOR
+    orH := math.max(orH, high)
+    orL := math.min(orL, low)
+if orClose
+    orDone := true
+if newDay and not inOR
+    orH := na
+    orL := na
+    orDone := false
+orM = (orH + orL) / 2
+
+// ----------------------------------------------------------------------------
+// SIGNAL COUNTER — the ONLY timeframe-dependent piece (runs on the signal TF).
+// ----------------------------------------------------------------------------
+f_count() =>
+    _inOR  = not na(time(timeframe.period, orSess,  tz))
+    _inRTH = not na(time(timeframe.period, rthSess, tz))
+    _orOpen  = _inOR  and not _inOR[1]
+    _orClose = not _inOR and _inOR[1]
+    _newDay  = _inRTH and not _inRTH[1]
+    var float _orH = na
+    var float _orL = na
+    var bool  _orDone = false
+    if _orOpen
+        _orH := high
+        _orL := low
+        _orDone := false
+    else if _inOR
+        _orH := math.max(_orH, high)
+        _orL := math.min(_orL, low)
+    if _orClose
+        _orDone := true
+    if _newDay and not _inOR
+        _orH := na
+        _orL := na
+        _orDone := false
+    var int _up = 0
+    var int _dn = 0
+    if _orOpen or _newDay
+        _up := 0
+        _dn := 0
+    if _inRTH and _orDone and not na(_orH)
+        if close > _orH
+            _up += 1
+            _dn := 0
+        else if close < _orL
+            _dn += 1
+            _up := 0
+        else
+            _up := 0
+            _dn := 0
+    [_up, _dn]
+
+sigSecs   = timeframe.in_seconds(sigTF)
+chartSecs = timeframe.in_seconds(timeframe.period)
+tfClamped = chartSecs > sigSecs
+effTF     = tfClamped ? timeframe.period : sigTF
+[upCount, dnCount] = request.security(syminfo.tickerid, effTF, f_count(), lookahead=barmerge.lookahead_off)
+
+breakUp = not na(orH) and orDone and upCount >= nCloses and (na(upCount[1]) or upCount[1] < nCloses)
+breakDn = not na(orL) and orDone and dnCount >= nCloses and (na(dnCount[1]) or dnCount[1] < nCloses)
+
+var label warnLbl = na
+if barstate.islast
+    label.delete(warnLbl)
+    if tfClamped
+        warnLbl := label.new(bar_index, high, "Chart TF coarser than Signal TF (" + sigTF + ") — signal computed on chart TF. Lower the chart timeframe for a finer signal.", color=color.new(color.orange, 20), textcolor=color.white, style=label.style_label_down, size=size.small)
+
+// ----------------------------------------------------------------------------
+// PLOTS
+// ----------------------------------------------------------------------------
+showLevels = inRTH and not na(orH)
+pltH = plot(showLevels ? orH : na, "ORH", color=colH, linewidth=2, style=plot.style_linebr)
+pltL = plot(showLevels ? orL : na, "ORL", color=colL, linewidth=2, style=plot.style_linebr)
+plot(showLevels ? orM : na, "ORM", color=colM, linewidth=1, style=plot.style_linebr)
+fill(pltH, pltL, color=showFill ? color.new(colH, 92) : na, title="Range fill")
+
+// ----------------------------------------------------------------------------
+// GATES + RISK MODEL (R = OR width, anchored to the breakout rail)
+// ----------------------------------------------------------------------------
+var bool tradedToday = false
+if newDay
+    tradedToday := false
+
+allowLong  = dir != "Short only"
+allowShort = dir != "Long only"
+gateOK     = not (oneTrade and tradedToday)
+
+goLong  = breakUp and allowLong  and gateOK
+goShort = breakDn and allowShort and gateOK
+
+R = orH - orL
+longStop  = orH - stopR * R
+longTgt   = rTarget > 0 ? orH + rTarget * R : na
+shortStop = orL + stopR * R
+shortTgt  = rTarget > 0 ? orL - rTarget * R : na
+
+// ----------------------------------------------------------------------------
+// EXECUTION
+// ----------------------------------------------------------------------------
+if goLong and R > 0
+    strategy.entry("Long", strategy.long)
+    strategy.exit("X-Long", "Long", stop=longStop, limit=longTgt)
+    tradedToday := true
+
+if goShort and R > 0
+    strategy.entry("Short", strategy.short)
+    strategy.exit("X-Short", "Short", stop=shortStop, limit=shortTgt)
+    tradedToday := true
+
+if flatEOD and not inRTH and inRTH[1]
+    strategy.close_all(comment="EOD flat")
+
+// ----------------------------------------------------------------------------
+// SIGNAL MARKERS (visual parity with the indicator)
+// ----------------------------------------------------------------------------
+plotshape(goLong,  "Long entry",  style=shape.triangleup,   location=location.belowbar, color=colH, size=size.small, text="OR↑")
+plotshape(goShort, "Short entry", style=shape.triangledown, location=location.abovebar, color=colL, size=size.small, text="OR↓")
