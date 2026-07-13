@@ -4,7 +4,7 @@ Context for Claude Code working in this repo.
 
 ## What this is
 
-A starter template for building and backtesting trading systems with Claude Code + TradingView. The flagship example is an **Opening Range Breakout (ORB)** in Pine Script (indicator + strategy); the Python parity layer and the validation pipeline are stubbed out — they fill in as I build the desk in public.
+A starter template for building and backtesting trading systems with Claude Code + TradingView + Sierra Chart. The flagship example is an **Opening Range Breakout (ORB)** in Pine Script (indicator + strategy). The Python layer is live: a parity ORB (`indicators/python/orb.py`), the honest-fills kernel (`backtests/`), and a teaching Sierra Chart `.scid` tick reader (`backtests/ticks.py`). Deeper validation gates (walk-forward, permutation, Monte-Carlo) fill in as I build the desk in public.
 
 Author/brand: **OPTD**. Tone: engineering + honesty + earned intuition. "Honest ___" is the house qualifier.
 
@@ -14,8 +14,11 @@ Author/brand: **OPTD**. Tone: engineering + honesty + earned intuition. "Honest 
 |------|---------|
 | `indicators/pine_reference/` | Pine Script — the **spec**. The source of truth for any logic. |
 | `indicators/python/` | Python reimplementations that must stay in **parity** with the Pine. |
-| `backtests/kernels.py` | Validated exit kernels (entry → stop/target → exit price/R). |
-| `backtests/runs/` | Saved backtest outputs. |
+| `backtests/data.py` | `Bar` (with `up_first`, the intrabar truth) + synthetic sessions + CSV loader. |
+| `backtests/fills.py` | Fill models — naive (the lie) vs honest. |
+| `backtests/kernels.py` | Validated exit kernels (entry → stop/target → exit price/R) + `validate_kernels()` self-test. |
+| `backtests/ticks.py` | Teaching `.scid` reader — parse ticks, rebuild bars, derive `up_first`. |
+| `backtests/runs/` | Runnable demos (`run_*.py`, tracked); saved outputs (gitignored). |
 | `research/prompts/` | One-shot prompt library — paste into Claude Code to (re)generate artifacts. |
 | `research/notebooks/` | Exploratory analysis. |
 | `data/tick/`, `data/cache/` | Raw + cached market data. **Gitignored.** See `data/README.md`. |

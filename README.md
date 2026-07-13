@@ -1,6 +1,6 @@
 # OPTD Starter
 
-A starter template for developing and backtesting trading systems with **Claude Code + TradingView**, the OPTD way: build the idea fast, sniff it on a chart, then validate it honestly.
+A starter template for developing and backtesting trading systems with **Claude Code**, the OPTD way: build the idea fast on **TradingView**, sniff it on a chart, then validate it honestly on **Sierra Chart** tick data.
 
 This repo ships with a worked example — an **Opening Range Breakout (ORB)** indicator + strategy in Pine Script — and the one-shot prompt that builds them.
 
@@ -8,9 +8,25 @@ This repo ships with a worked example — an **Opening Range Breakout (ORB)** in
 
 1. **Indicator** — see the setup on the chart (the eyes). `indicators/pine_reference/Opening_Range.pine`
 2. **Strategy + TradingView Strategy Tester** — a quick "is there a pulse?" backtest. Fast, visual, *imperfect*. `indicators/pine_reference/Opening_Range_Strategy.pine`
-3. **Python pipeline** 🚧 — the honest verdict: years of data, real fills, walk-forward, Monte-Carlo bust probability, permutation p-value. (`indicators/python/`, `backtests/`) — *stubbed out today; this layer fills in as I build the desk in public, starting with the deep-backtest video.*
+3. **Python pipeline** — the honest verdict. **The first layer is in: honest fills.** A backtest can manufacture a fake edge out of *nothing* just by assuming fills it never got. Run it yourself:
 
-Step 2 is something anyone can do. Step 3 is the differentiator: **rigorous vibe coding for trading** — and it fills in as I build in public, starting with the deep-backtest video.
+   ```bash
+   python backtests/runs/run_fills_demo.py
+   ```
+
+   It runs the same ORB through two fill models on **random-walk data** (which has no real edge). The honest fills report ~0, as they must. The naive fills conjure a positive expectancy from thin air — that gap is the lie. Files: `indicators/python/orb.py`, `backtests/fills.py`, `backtests/kernels.py`. More gates (walk-forward, permutation, Monte-Carlo) fill in as I build the desk in public.
+
+4. **Sierra Chart tick data — where honest fills come from.** A backtest is only as honest as its data, and the honest-fills lesson turns on one bit per bar — *did the high print before the low?* — that lives in the **ticks**, not in OHLC. This slice is a teaching Sierra Chart `.scid` reader: it writes a synthetic tick stream in the real `.scid` record shape, reads it back by parsing the bytes (the actual skill), and reconstructs bars from the ticks — then feeds those tick-rebuilt bars straight into the honest-vs-naive test. Run it:
+
+   ```bash
+   python backtests/runs/run_scid_demo.py
+   ```
+
+   Same random-walk data (honest ≈ 0), but now the whole thing is anchored on the tick reading that makes honest fills possible in the first place. Once you can read the ticks, you reconstruct any strategy tick by tick instead of trusting a platform's guess. Files: `backtests/ticks.py`, `backtests/runs/run_scid_demo.py`.
+
+Step 2 is something anyone can do. Steps 3–4 are the differentiator: **rigorous vibe coding for trading**.
+
+> **Teaching layer vs production.** What's in this repo is the *teaching* layer — the method, on synthetic data, so you can see the lie with zero hand-waving. The `.scid` reader here parses the real record format but runs on a synthetic tick file. The *production* harness — the real `.scid` reader over live exchange files (timezone handling + a parquet cache that replays years in seconds so you can run thousands of permutations), the multi-gate validated kernel, and the full validation gauntlet — runs on the live desk and ships in the [community](https://onepersontradedesk.com). **The methodology is free; the working files are the paid part. No methodology is ever gated.**
 
 ## Structure
 
@@ -28,8 +44,11 @@ optd-starter/
 │   ├── prompts/           # prompt library (one-shot builders)
 │   └── notebooks/
 ├── backtests/
-│   ├── kernels.py         # validated exit kernels
-│   └── runs/
+│   ├── data.py            # Bar + synthetic sessions + CSV loader
+│   ├── fills.py           # fill models — naive (the lie) vs honest
+│   ├── kernels.py         # validated exit kernels + self-test
+│   ├── ticks.py           # teaching .scid reader (ticks → bars)
+│   └── runs/              # runnable demos (run_*.py)
 ├── indicators/
 │   ├── python/            # Python implementations (parity with Pine)
 │   └── pine_reference/    # Pine source — the spec
@@ -60,7 +79,9 @@ Most of these are scaffolded today and fill in as I build each role on camera.
 
 1. Open `indicators/pine_reference/Opening_Range.pine` and `Opening_Range_Strategy.pine`, paste into TradingView's Pine Editor, add to chart.
 2. Use an **intraday** chart (1m–15m) on a futures symbol (`NQ1!`, `ES1!`, `MNQ1!`). Chart TF ≤ Signal TF.
-3. To rebuild from scratch with Claude Code, hand it `research/prompts/orb_indicator_and_strategy.md`.
+3. Run the Python demos (Python 3.9+, `pip install -r requirements.txt` — it's just numpy):
+   `python backtests/runs/run_fills_demo.py` and `python backtests/runs/run_scid_demo.py`. No market data needed — both generate synthetic sessions.
+4. To rebuild from scratch with Claude Code, hand it `research/prompts/orb_indicator_and_strategy.md`.
 
 ## Hard-won gotchas (baked into the prompt)
 

@@ -5,9 +5,10 @@ data/cache/
 *.scid
 *.csv
 
-# Backtest outputs
+# Backtest run outputs (CSVs, logs) — but keep the runnable demo scripts
 backtests/runs/*
 !backtests/runs/.gitkeep
+!backtests/runs/run_*.py
 
 # Python
 __pycache__/
