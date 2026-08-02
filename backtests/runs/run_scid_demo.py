@@ -71,7 +71,7 @@ def act1_read_a_scid_file() -> None:
     print(f"\nreconstructed {len(bars)} one-minute bars from {len(got):,} ticks")
     print(f"    bar 0:  O={b0.open:.2f}  H={b0.high:.2f}  L={b0.low:.2f}  C={b0.close:.2f}"
           f"   up_first={b0.up_first}")
-    print("    ^ up_first — did the high print before the low? — is read straight off the")
+    print("    ^ up_first -- did the high print before the low? -- is read straight off the")
     print("      tick order. An OHLC feed cannot tell you this. The fills kernel needs it.\n")
 
 
@@ -112,7 +112,7 @@ def act2_why_it_matters() -> None:
     print(f"\nphantom wins: {phantom_wins} of {naive_win_ct} naive wins ({pct:.0%}) were "
           f"actually losses once fills were honest.")
     print("the ticks are where the intrabar truth lives. throw them away and your fills")
-    print("become fiction — which is exactly the edge the naive column just made up.")
+    print("become fiction -- which is exactly the edge the naive column just made up.")
 
 
 def main() -> None:

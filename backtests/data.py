@@ -44,13 +44,22 @@ class Bar:
 
 
 def synth_session(seed: int, n_minutes: int = 390, start: float = 5000.0,
-                  step_vol: float = 1.25, intrabar_steps: int = 6) -> list[Bar]:
-    """A deterministic synthetic trading session — a pure random walk.
+                  step_vol: float = 1.25, intrabar_steps: int = 6,
+                  drift_per_min: float = 0.0) -> list[Bar]:
+    """A deterministic synthetic trading session — a random walk, optionally drifting.
 
     Pure random walk is the point: a random series has **no real edge**, so any
     positive expectancy a backtest reports on it is an artifact. The honest fills
     will show ~0; the naive fills will manufacture a fake edge from thin air. That
     gap is the lie, isolated.
+
+    `drift_per_min` adds a constant upward push per **minute** — a market that goes
+    up on its own — spread evenly across that minute's intrabar steps, so the number
+    you pass means the same thing regardless of `intrabar_steps`. It is still pure
+    noise plus a trend: there is nothing for a signal to *find*. A long-biased
+    strategy will nonetheless print real money it did not earn, which is the FLUKE
+    test's whole subject (see run_drift_demo.py). Default 0.0 leaves the walk
+    driftless and every existing result bit-identical.
 
     Each minute is built from a mini intrabar walk, so `high`, `low`, and crucially
     `up_first` are all derived from a real (simulated) path — not assumed.
@@ -58,11 +67,12 @@ def synth_session(seed: int, n_minutes: int = 390, start: float = 5000.0,
     rng = np.random.default_rng(seed)
     bars: list[Bar] = []
     price = start
+    per_step = drift_per_min / intrabar_steps
     for t in range(n_minutes):
         o = price
         path = [o]
         for _ in range(intrabar_steps):
-            path.append(path[-1] + rng.normal(0.0, step_vol))
+            path.append(path[-1] + per_step + rng.normal(0.0, step_vol))
         hi, lo = max(path), min(path)
         # the intrabar truth: index of the high vs the low along the path
         up_first = path.index(hi) < path.index(lo)
@@ -82,7 +92,11 @@ def load_bars_csv(path: str, up_first_col: str | None = "up_first") -> list[Bar]
     import csv
 
     bars: list[Bar] = []
-    with open(path, newline="") as f:
+    # encoding is explicit on purpose: bare open() uses the *locale* encoding, which is
+    # UTF-8 on macOS/Linux but cp1252 on Windows — the same CSV then parses differently
+    # depending on who ran it. "utf-8-sig" also eats the BOM Excel prepends, which would
+    # otherwise turn the first column header into "﻿open" and KeyError on you.
+    with open(path, newline="", encoding="utf-8-sig") as f:
         for i, row in enumerate(csv.DictReader(f)):
             uf = None
             if up_first_col and row.get(up_first_col, "") != "":

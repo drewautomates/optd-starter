@@ -33,18 +33,35 @@ def honest_exit(side: str, entry_idx: int, entry_price: float, stop: float,
     reason is "target" | "stop" | "eod". `mode` is "honest" or "naive" (the lie).
     R is the stop distance, so a stop is always -1.0R.
     """
+    reason, price, r, _exit_idx = honest_exit_detail(side, entry_idx, entry_price,
+                                                     stop, target, bars, mode)
+    return reason, price, r
+
+
+def honest_exit_detail(side: str, entry_idx: int, entry_price: float, stop: float,
+                       target: float, bars: list[Bar],
+                       mode: str = "honest") -> tuple[str, float, float, int]:
+    """`honest_exit`, plus the bar index the trade exited on.
+
+    Test three (the drift control) needs the exit *moment*, not just the price: it
+    holds a no-signal position over the exact same bars, and it can only do that
+    like-for-like if it knows where the strategy got out. Deriving that here — in
+    the kernel that already walks the bars — is the point. The alternative is a
+    second walk in the demo, which is one refactor away from silently disagreeing
+    with the kernel about when a trade ended.
+    """
     R = abs(entry_price - stop)
     if R == 0:
         raise ValueError("zero risk: entry price equals stop")
     resolve = resolve_long if side == "long" else resolve_short
-    for bar in bars[entry_idx + 1:]:
-        hit = resolve(bar, stop, target, mode)
+    for j in range(entry_idx + 1, len(bars)):
+        hit = resolve(bars[j], stop, target, mode)
         if hit is not None:
             reason, price = hit
-            return reason, price, _realized_r(side, entry_price, price, R)
+            return reason, price, _realized_r(side, entry_price, price, R), j
     # never hit a level — flat at the last close (end of data / session)
     price = bars[-1].close
-    return "eod", price, _realized_r(side, entry_price, price, R)
+    return "eod", price, _realized_r(side, entry_price, price, R), len(bars) - 1
 
 
 def _realized_r(side: str, entry: float, exit_price: float, R: float) -> float:
@@ -80,7 +97,7 @@ def validate_kernels() -> None:
     reason, price, r = honest_exit("long", 0, 100.0, 99.0, 101.5, inside, "honest")
     assert reason == "eod" and price == 100.2 and abs(r - 0.2) < 1e-9, f"EOD flat failed: {reason} {price} {r}"
 
-    print("validate_kernels: PASS — the kernel refuses to book a price the market never reached.")
+    print("validate_kernels: PASS -- the kernel refuses to book a price the market never reached.")
 
 
 if __name__ == "__main__":
