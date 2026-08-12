@@ -4,7 +4,7 @@ Context for Claude Code working in this repo.
 
 ## What this is
 
-A starter template for building and backtesting trading systems with Claude Code + TradingView + Sierra Chart. The flagship example is an **Opening Range Breakout (ORB)** in Pine Script (indicator + strategy). The Python layer is live: a parity ORB (`indicators/python/orb.py`), the honest-fills kernel (`backtests/`), the three bias tests (`backtests/runs/`), and a teaching Sierra Chart `.scid` tick reader (`backtests/ticks.py`). Deeper validation gates (walk-forward, permutation, Monte-Carlo) are not built yet — treat them as absent, not as code to go find.
+A starter template for building and backtesting trading systems with Claude Code + TradingView + Sierra Chart. The flagship example is an **Opening Range Breakout (ORB)** in Pine Script (indicator + strategy). The Python layer is live: a parity ORB (`indicators/python/orb.py`), the honest-fills kernel (`backtests/`), the three bias tests (`backtests/runs/`), and a teaching Sierra Chart `.scid` tick reader (`backtests/ticks.py`). The same ORB also exists as a Sierra Chart **ACSIL signal study** in C++ (`sierra/studies/OPTD_Opening_Range.cpp`) — see `sierra/DEPLOY.md`. Deeper validation gates (walk-forward, permutation, Monte-Carlo) are not built yet — treat them as absent, not as code to go find.
 
 > **Forked this?** This file is yours to edit. Replace the author tag below with your own, and delete anything that describes the upstream project rather than your work.
 
@@ -43,13 +43,16 @@ python3 backtests/runs/run_scid_demo.py    # .scid ticks -> bars -> honest fills
 | `research/prompts/` | One-shot prompt library — paste into Claude Code to (re)generate artifacts. |
 | `research/notebooks/` | Exploratory analysis. |
 | `data/tick/`, `data/cache/` | Raw + cached market data. **Gitignored.** See `data/README.md`. |
-| `sierra/studies/` | Sierra Chart ACSIL (C++) studies. |
+| `sierra/studies/` | Sierra Chart ACSIL (C++) studies. **Source of truth** — never edit the deployed copy in `ACS_Source`. |
+| `sierra/scripts/` | `deploy.ps1` / `deploy.sh` — copy `sierra/studies/*` into a Sierra Chart `ACS_Source`. |
+| `sierra/DEPLOY.md` | Deploy → build → load → verify, and the four failure modes. |
 | `journal/schema.sql` | Trade journal DB schema. |
 
 ## Conventions
 
 - **Pine is the spec.** When Pine and Python disagree, Pine wins (or you fix both in the same change). Note parity in commits.
 - **Pine Script v6.** Author tag `OPTD` — change it to your own handle if you forked this.
+- **Sierra Chart / ACSIL.** One study per file, `SCDLLName("OPTD_Studies")`, study functions prefixed `scsf_OPTD_`. Every threshold, time and count is a user input — no constants buried in logic. ASCII only in any string that reaches the Sierra Chart message log. **Signal studies are signals only**: they draw levels and mark bars, and never place, modify or manage an order or touch the trading API. Claude Code cannot compile ACSIL — the build is a GUI action inside Sierra Chart, so deploy and then ask for the build output. **ACSIL has a small public corpus, which is exactly the condition under which a model invents a plausible function that does not exist**: if you are not certain a signature exists, find it in the `ACS_Source` examples that ship with Sierra Chart and say which file and function you took it from, or stop. Do not guess a signature.
 - **Standalone and portable.** This repo is public and gets cloned onto machines nothing like the one it was written on. So:
   - **No absolute paths, ever.** Resolve from `__file__` or the repo root, never from a home directory or a drive letter.
   - **No machine-specific config** — no hardcoded data directories, broker accounts, platform install paths, or environment variables the reader doesn't have.

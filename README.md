@@ -102,8 +102,11 @@ optd-starter/
 │   ├── python/            # Python implementations (parity with Pine)
 │   └── pine_reference/    # Pine source — the spec
 ├── sierra/
+│   ├── DEPLOY.md          # deploy → build → verify, and the four gotchas
+│   ├── scripts/           # deploy.ps1 / deploy.sh → your ACS_Source
 │   ├── studies/           # .cpp ACSIL studies
-│   └── exports/
+│   ├── chartbooks/        # .Cht chartbooks
+│   └── exports/           # Export Chart Data CSVs
 ├── journal/
 │   └── schema.sql
 └── README.md
@@ -119,7 +122,7 @@ This repo is the tangible companion to the [One Person Trade Desk](https://onepe
 | `indicators/` | **Quant Developer** — Claude Code writes the code (Pine = spec, Python = parity) |
 | `backtests/` | **Quant Researcher + Risk Manager** — exit kernels, walk-forward, Monte-Carlo |
 | `data/` | **Data Engineering** — tick data + parquet cache |
-| `sierra/` | **Execution Trader + Tech Infrastructure** — ACSIL studies, live exports |
+| `sierra/` | **Execution Trader + Tech Infrastructure** — ACSIL studies, live exports. Start at [`sierra/DEPLOY.md`](sierra/DEPLOY.md). |
 | `journal/` | **Performance Analytics + Compliance** — trade log + honest self-review |
 
 Most of these are scaffolded today and fill in as I build each role on camera.

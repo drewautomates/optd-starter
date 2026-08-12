@@ -9,6 +9,13 @@
 *.json   text eol=lf
 *.txt    text eol=lf
 *.ipynb  text eol=lf
+*.cpp    text eol=lf
+*.h      text eol=lf
+*.sh     text eol=lf
+*.ps1    text eol=lf
+
+# Chartbooks are XML but Sierra Chart rewrites them; leave the bytes alone.
+*.Cht    binary
 
 # Binary / data files — never touch
 *.png    binary
