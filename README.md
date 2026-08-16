@@ -155,7 +155,7 @@ Most of these are scaffolded today and fill in as I build each role on camera.
 
 This repo fills in as I build the desk in public. The **[newsletter](https://onepersontradedesk.com/subscribe)** is where it connects — new drops, the methodology behind them, and the waitlist for the OPTD community when it opens.
 
-**Coming next:** the **backtest bias-reviewer** — the Claude skill that catches lookahead, overfitting, and survivorship bias before you trust a curve. It ships with the next video; subscribe to get it first.
+**In the works:** the **backtest bias-reviewer** — a Claude Code skill that audits a backtest in seven layers, from lookahead in the data all the way to the biases that live in the researcher instead of the code. It drops with its own video when it's ready; the **[newsletter](https://onepersontradedesk.com/subscribe)** gets it first.
 
 → **[Subscribe](https://onepersontradedesk.com/subscribe)** · [onepersontradedesk.com](https://onepersontradedesk.com)
 
