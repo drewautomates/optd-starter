@@ -4,6 +4,22 @@ A starter template for developing and backtesting trading systems with **Claude 
 
 This repo ships with a worked example — an **Opening Range Breakout (ORB)** indicator + strategy in Pine Script — and the one-shot prompt that builds them.
 
+[📺 **The videos**](https://www.youtube.com/channel/UCTN36flT82vfS-2sw1QBu9w) · [📧 **Newsletter**](https://onepersontradedesk.com/subscribe) · [🌐 **onepersontradedesk.com**](https://onepersontradedesk.com)
+
+## The library — one component per video
+
+Every video adds a runnable component to this repo. This table is the index, newest first. The method is always in the video, free.
+
+| # | Video | What it shipped here |
+|---|---|---|
+| 5 | [How to Build a Sierra Chart Indicator with Claude Code](https://youtu.be/9l_DITJmeQI) | The ACSIL signal study ([`sierra/studies/OPTD_Opening_Range.cpp`](sierra/studies/OPTD_Opening_Range.cpp)), the deploy scripts + four build gotchas ([`sierra/DEPLOY.md`](sierra/DEPLOY.md)), the chartbook ([`sierra/chartbooks/OPTD.Cht`](sierra/chartbooks/OPTD.Cht)), and the one-shot study prompt ([`research/prompts/orb_sierra_chart_study.md`](research/prompts/orb_sierra_chart_study.md)) |
+| 4 | [Claude Code Trading Strategies Are Easy to Build. That's the Problem. (I Tested 5)](https://youtu.be/WdPdJCU88-U) | The three-test gauntlet — **FIT** ([`run_cheat_demo.py`](backtests/runs/run_cheat_demo.py)), **FILL** ([`run_fills_demo.py`](backtests/runs/run_fills_demo.py)), **FLUKE** ([`run_drift_demo.py`](backtests/runs/run_drift_demo.py)), end to end ([`run_gauntlet.py`](backtests/runs/run_gauntlet.py)) |
+| 3 | [Claude Code Backtests on Real Tick Data (The Test TradingView Can't Run)](https://youtu.be/zxrtVFJyujQ) | The teaching Sierra Chart `.scid` tick reader ([`backtests/ticks.py`](backtests/ticks.py)) and the ticks → bars → honest-fills demo ([`run_scid_demo.py`](backtests/runs/run_scid_demo.py)) |
+| 2 | [Hedge Funds Pay $5M for This Trading Desk. I Built Mine for $150 a Month](https://youtu.be/L3xhBOKvrO8) | The desk itself — this repo's folders mirror the [10 desk roles](#how-this-maps-to-the-desk-the-10-roles) that video tours |
+| 1 | [Opening Range Breakout Strategy Doesn't Work (Claude Code Backtest)](https://youtu.be/n8-SYGHzuHs) | The worked example — ORB indicator + strategy in Pine ([`indicators/pine_reference/`](indicators/pine_reference)) and the prompt that builds them ([`research/prompts/orb_indicator_and_strategy.md`](research/prompts/orb_indicator_and_strategy.md)) |
+
+⭐ **Star the repo to follow along** — a new row lands with every video, and stars are how other traders find this.
+
 ## Quick start (60 seconds, no market data)
 
 ```bash
