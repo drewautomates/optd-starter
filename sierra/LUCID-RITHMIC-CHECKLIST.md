@@ -1,6 +1,6 @@
 # Sierra Chart → Lucid Trading through Rithmic — the click path
 
-The written checklist from the video **How I Trade 5 Lucid Prop Firm Accounts From Sierra Chart** (video 9 in the
+The written checklist from the video **How I Copy Trade 5 Lucid Accounts From Sierra Chart** (video 9 in the
 [library](../README.md#the-library--one-component-per-video)). One Sierra Chart lead account, four followers copied
 by Rithmic's Trade Copier in R | Trader Pro. Keep this beside you while you set it up; the reasoning is in the video.
 
