@@ -92,7 +92,10 @@ def trade_net(bars, i: int, side: str) -> float:
     entry = bars[i + 1].open + (slip if side == "long" else -slip)
     stop = entry - FIXED_R if side == "long" else entry + FIXED_R
     target = entry + R_MULT * FIXED_R if side == "long" else entry - R_MULT * FIXED_R
-    reason, exit_price, _ = honest_exit(side, i + 1, entry, stop, target, bars, "honest")
+    # honest_exit starts checking at entry_idx + 1. Pass the SIGNAL bar, so the first bar
+    # checked is the entry bar itself: you got in at its open, and the rest of that minute
+    # can stop you out like any other.
+    reason, exit_price, _ = honest_exit(side, i, entry, stop, target, bars, "honest")
     if reason == "stop":
         exit_price -= slip if side == "long" else -slip
     pts = (exit_price - entry) if side == "long" else (entry - exit_price)
