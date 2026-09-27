@@ -25,6 +25,8 @@ python3 backtests/runs/run_cheat_demo.py   # 1 - FIT   the cheat ladder
 python3 backtests/runs/run_fills_demo.py   # 2 - FILL  naive vs honest fills
 python3 backtests/runs/run_drift_demo.py   # 3 - FLUKE signal vs drift control
 python3 backtests/runs/run_scid_demo.py    # .scid ticks -> bars -> honest fills
+python3 backtests/runs/run_lookahead_demo.py  # 4 - TIME  forming vs completed higher-timeframe bar
+python3 backtests/probes.py                # lookahead probes self-test
 ```
 
 ## Where things go
@@ -39,6 +41,8 @@ python3 backtests/runs/run_scid_demo.py    # .scid ticks -> bars -> honest fills
 | `backtests/drift.py` | The no-signal control (`drift_trade`) + paired scoring against the noise floor (`compare_to_drift`). Test 3. |
 | `backtests/kernels.py` | Validated exit kernels (entry → stop/target → exit price/R) + `validate_kernels()` self-test. `honest_exit_detail` also returns the exit bar index, which the drift control needs. |
 | `backtests/ticks.py` | Teaching `.scid` reader — parse ticks, rebuild bars, derive `up_first`. |
+| `backtests/probes.py` | Lookahead probes: `prefix_invariance` (delete the future, does the value change?) and `warmup_sensitivity` (does it depend on history start?). Used by the bias check. |
+| `.claude/skills/bias-check/` | `/bias-check <folder>` — audits someone's backtest folder against this repo's reference kernels. Read-only on their code; writes to `<folder>/_bias_check/`. |
 | `backtests/runs/` | Runnable demos (`run_*.py`, tracked); saved outputs (gitignored). `run_gauntlet.py` runs the three bias tests (FIT / FILL / FLUKE) end to end. |
 | `research/prompts/` | One-shot prompt library — paste into Claude Code to (re)generate artifacts. |
 | `research/notebooks/` | Exploratory analysis. |

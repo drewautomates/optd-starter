@@ -81,6 +81,29 @@ lie, in a lab, where you can see all of it. Then you point them at your own resu
 
 Run them before you put money behind a strategy, not after.
 
+## The bias check — point it at your own backtest
+
+The gauntlet shows the lies on random data. The **bias check** goes looking for them in *your* code.
+It's a Claude Code skill: point it at your backtest folder and it maps the pipeline from raw data to
+the equity number, checks every signal and indicator for lookahead, runs probes against your real
+code, and writes a report of where the number may be fake, with the file, the line, and both numbers
+side by side. It never edits your files.
+
+```bash
+# from a clone of this repo, in Claude Code
+/bias-check ../path/to/your-backtest
+```
+
+No skills? Paste [`research/prompts/bias_check.md`](research/prompts/bias_check.md) into Claude Code
+from inside your own backtest folder instead.
+
+The most expensive lie gets its own demo, because it's the one that looks like the best edge you've
+ever found:
+
+| Test | Command | What it catches |
+|---|---|---|
+| **4 · TIME** | `python3 backtests/runs/run_lookahead_demo.py` | A 1-minute strategy with a 10-minute trend filter. Read the 10-minute candle that's still forming and it already knows its own close. Same strategy, same fills, same costs, random data: one index turns a loss into a profit. The probe in [`backtests/probes.py`](backtests/probes.py) catches it by deleting the future and checking whether the answer changes, without reading a line of the code. |
+
 Test three reports every gap against its own **noise floor**. The strategy and its control
 trade the same bars, so they're scored as a paired difference — the market's variance cancels
 and what's left is the part the signal is answerable for. A gap smaller than that floor comes
@@ -97,6 +120,7 @@ optd-starter/
 ├── CLAUDE.md              # project context for Claude Code
 ├── .claude/
 │   ├── settings.json      # tool permissions
+│   ├── skills/bias-check/ # /bias-check <your folder> — audits your backtest
 │   └── agents/            # sub-agents (added as the desk grows)
 ├── data/
 │   ├── tick/              # raw tick data (gitignored)
@@ -112,11 +136,13 @@ optd-starter/
 │   ├── drift.py           # the no-signal control + the noise floor            (test 3)
 │   ├── kernels.py         # validated exit kernels + self-test
 │   ├── ticks.py           # teaching .scid reader (ticks → bars)
+│   ├── probes.py          # lookahead probes: delete the future, see if the answer changes
 │   └── runs/              # runnable demos
 │       ├── run_gauntlet.py    # all three bias tests
 │       ├── run_cheat_demo.py  # 1 · FIT
 │       ├── run_fills_demo.py  # 2 · FILL
 │       ├── run_drift_demo.py  # 3 · FLUKE
+│       ├── run_lookahead_demo.py  # 4 · TIME — the forming higher-timeframe candle
 │       └── run_scid_demo.py   # ticks → bars → honest fills
 ├── indicators/
 │   ├── python/            # Python implementations (parity with Pine)
@@ -158,8 +184,6 @@ Most of these are scaffolded today and fill in as I build each role on camera.
 ## Follow along
 
 This repo fills in as I build the desk in public. The **[newsletter](https://onepersontradedesk.com/subscribe)** is where it connects — new drops, the methodology behind them, and the waitlist for the OPTD community when it opens.
-
-**In the works:** the **backtest bias-reviewer** — a Claude Code skill that audits a backtest in seven layers, from lookahead in the data all the way to the biases that live in the researcher instead of the code. It drops with its own video when it's ready; the **[newsletter](https://onepersontradedesk.com/subscribe)** gets it first.
 
 → **[Subscribe](https://onepersontradedesk.com/subscribe)** · [onepersontradedesk.com](https://onepersontradedesk.com)
 
