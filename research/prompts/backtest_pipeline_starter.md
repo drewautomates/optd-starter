@@ -32,7 +32,8 @@ you run through it is yours. The ORB in this repo is an example, not a strategy 
 Build me a Python backtester that reads Sierra Chart .scid tick files directly.
 
 My setup (ask me for anything I leave blank; don't assume):
-  - Instrument and contracts: ____   (e.g. NQ, quarterly H/M/U/Z, $20/point, 0.25 tick)
+  - Instrument and contracts: ____   (e.g. NQ, quarterly H/M/U/Z, $20/point, 0.25 tick;
+    or a stock, e.g. SPY)
   - Session and timezone I trade: ____   (e.g. 9:30-16:00 US/Eastern, flat by the close,
     last entry by 15:00)
   - Strategy rules: ____   (signal timeframe, signal, where R is measured from, stop,
@@ -60,7 +61,8 @@ Requirements:
      contracts into one series. If an indicator needs a continuous price history,
      back-adjust the earlier contract by the gap between the two, measured at the last
      minute both traded on the roll Friday. Fills always come from the real contract's
-     own ticks. No trade is held across a roll.
+     own ticks. No trade is held across a roll. If it's a stock, there is no roll: adjust
+     the price history for splits and dividends instead, and skip the rest of this step.
   5. Signals only use data that existed when the bar closed. Any higher-timeframe input
      reads the last COMPLETED bar, never the one still forming.
   6. Enter at the next bar's open, not the close of the signal bar.
@@ -93,7 +95,7 @@ I haven't told you.
 | 1 | Sierra's tick files on your machine are the advantage: standardised, local, and cheap. Reading them is the first step, so it's done from the documented format, not from a guess. |
 | 2 | The first thing that lied to me: a UTC file and a Pacific session. Hours of chasing prices that didn't match. |
 | 3 | Bars stamped at the close, and the intrabar truth kept, so the fills can be honest later. Clock-built higher timeframes, because counting rows drifts when the file starts at a different minute. |
-| 4 | The futures question nobody answers: roll in the week before expiry, stitch, back-adjust only for indicators, fill on the real contract. |
+| 4 | The futures question nobody answers: roll in the week before expiry, stitch, back-adjust only for indicators, fill on the real contract. On a stock, splits and dividends take the roll's place. |
 | 5 | The one that cost a week: the ten-minute candle that knew its own close. |
 | 6 | The entry you could actually have had. |
 | 7 | Bar data can't tell whether the stop or the target hit first. Ticks can. |
