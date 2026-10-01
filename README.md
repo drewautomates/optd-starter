@@ -187,6 +187,13 @@ This repo fills in as I build the desk in public. The **[newsletter](https://one
 
 → **[Subscribe](https://onepersontradedesk.com/subscribe)** · [onepersontradedesk.com](https://onepersontradedesk.com)
 
+Still deciding what to build the desk on? The platform calls, from the operator's side:
+[Sierra Chart vs TradingView](https://onepersontradedesk.com/compare/sierra-chart-vs-tradingview) ·
+[NinjaTrader vs Sierra Chart](https://onepersontradedesk.com/compare/ninjatrader-vs-sierra-chart) ·
+[ATAS vs Sierra Chart](https://onepersontradedesk.com/compare/atas-vs-sierra-chart) ·
+[Quantower vs Sierra Chart](https://onepersontradedesk.com/compare/quantower-vs-sierra-chart) ·
+[all comparisons](https://onepersontradedesk.com/compare)
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Educational/research only; **not financial advice**.
