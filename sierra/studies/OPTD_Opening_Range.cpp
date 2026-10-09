@@ -29,7 +29,9 @@ SCDLLName("OPTD_Studies")
     6. A close back inside the range zeros both counters. A close beyond one
        rail zeros the opposite counter.
     7. At most one long and one short per session. A side that has fired is
-       done for the day; the other side can still fire.
+       done for the day; the other side can still fire. With "Single Breakout
+       Per Session" set to Yes, the FIRST signal of either side ends the
+       session: once a long has fired no short can fire, and vice versa.
     8. Nothing fires outside the session, inside the opening-range window, at
        or after Session End Time, or on a bar that has not closed.
     9. NO RANGE, NO SIGNALS. A session that never completes an opening-range
@@ -130,6 +132,10 @@ SCSFExport scsf_OPTD_OpeningRange(SCStudyInterfaceRef sc)
 	SCInputRef Input_ShowStopTarget   = sc.Input[9];
 	SCInputRef Input_ShowArrows       = sc.Input[10];
 	SCInputRef Input_LogSignals       = sc.Input[11];
+	// Appended rather than inserted: Sierra Chart binds saved input values by
+	// index, so slotting this in the middle would shift every input after it
+	// on an already-attached instance.
+	SCInputRef Input_SingleBreakout   = sc.Input[12];
 
 	//--------------------------------------------------------------------------
 	// Section 1 - defaults. Runs once, when the study is first added.
@@ -237,6 +243,11 @@ SCSFExport scsf_OPTD_OpeningRange(SCStudyInterfaceRef sc)
 		Input_LogSignals.Name = "Log Signals To Message Log";
 		Input_LogSignals.SetYesNo(false);
 
+		// No = one long AND one short allowed per session (the original
+		// behaviour). Yes = the first breakout of either side is the only one.
+		Input_SingleBreakout.Name = "Single Breakout Per Session";
+		Input_SingleBreakout.SetYesNo(false);
+
 		return;
 	}
 
@@ -263,6 +274,7 @@ SCSFExport scsf_OPTD_OpeningRange(SCStudyInterfaceRef sc)
 	const bool ShowStopTarget = Input_ShowStopTarget.GetYesNo() != 0;
 	const bool ShowArrows     = Input_ShowArrows.GetYesNo() != 0;
 	const bool LogSignals     = Input_LogSignals.GetYesNo() != 0;
+	const bool SingleBreakout = Input_SingleBreakout.GetYesNo() != 0;
 
 	//--------------------------------------------------------------------------
 	// Section 3 - THE BAR-CLOSE GATE. See the header comment. This must come
@@ -473,15 +485,26 @@ SCSFExport scsf_OPTD_OpeningRange(SCStudyInterfaceRef sc)
 	}
 
 	//--------------------------------------------------------------------------
-	// Section 10 - fire at most one signal per side per session, and hold the
-	// risk levels that go with it.
+	// Section 10 - fire at most one signal per side per session (or one in
+	// total with Single Breakout Per Session), and hold the risk levels that
+	// go with it.
 	//
 	// Risk levels are drawn and nothing else. There is no notion of the trade
 	// being filled, stopped or closed, because nothing is traded.
 	//--------------------------------------------------------------------------
 	int FiredDirection = 0;   // +1 long, -1 short, 0 nothing this bar
 
-	if (!r_LongFired && r_LongCount >= ConfirmationCloses)
+	// Single-breakout mode: once either side has fired, the session is done.
+	// The counters above keep running so the logic is identical up to this
+	// point in both modes - only the permission to fire changes.
+	const bool SessionDone = SingleBreakout && (r_LongFired || r_ShortFired);
+
+	if (SessionDone)
+	{
+		// Nothing fires. Fall through so the existing stop/target lines keep
+		// drawing for the rest of the session.
+	}
+	else if (!r_LongFired && r_LongCount >= ConfirmationCloses)
 	{
 		r_LongFired = 1;
 		FiredDirection = 1;

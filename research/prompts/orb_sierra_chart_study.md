@@ -97,7 +97,9 @@ All times below are TIME OF DAY IN THE CHART'S TIMEZONE. Do not convert timezone
      counter to zero.
   7. ONE PER SIDE PER SESSION. At most one long signal and one short signal per
      session. After a side has fired, that side is done for the day; the other side
-     may still fire.
+     may still fire. A Yes/No input "Single Breakout Per Session" (default No,
+     appended as the LAST input) switches to one signal in total: the first side to
+     fire ends the session for both sides.
   8. NO SIGNAL outside the session, inside the opening-range window itself, at or
      after Session End Time, or on any bar that is not closed.
   9. NO RANGE, NO SIGNALS. If a session never produces a complete opening-range
