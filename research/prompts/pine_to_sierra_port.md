@@ -20,7 +20,7 @@ or redistribute a port of someone else's script. Invite-only and paid scripts: l
 3. Open Claude Code in your project and give it Sierra Chart's own examples: `/add-dir <your Sierra install>/ACS_Source`.
 4. Paste the **port prompt** below. Answer what it asks, then build the study in Sierra Chart (see
    [`sierra/DEPLOY.md`](../../sierra/DEPLOY.md)). Build errors go straight back to Claude Code.
-5. Add the study to the same symbol and timeframe, export it (Chart → Write Bar and Study Data To File,
+5. Add the study to the same symbol and timeframe, export it (Edit → Write Bar and Study Data To File,
    include hidden subgraphs) and paste the **compare prompt** with both files.
 6. RED? Ask it to look at the first bar that fails on both sides, fix the `.cpp`, rebuild, re-export, compare again.
 
