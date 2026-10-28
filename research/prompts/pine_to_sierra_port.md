@@ -1,6 +1,6 @@
 # Pine Script → Sierra Chart port: the starter prompts (v1)
 
-Ships with video 12, [How to Reverse Engineer Any TradingView Indicator (I Ported the Most Popular One)](https://youtu.be/VIDEO_ID).
+Ships with video 12, [How to Reverse Engineer Any TradingView Indicator (I Ported the Most Popular One)](https://youtu.be/8IT11TOhyo4).
 Two prompts: the **port prompt** (Pine Script source → a Sierra Chart ACSIL study) and the **compare prompt**
 (both exports → a bar-by-bar verdict). These are the same steps the video runs through an app, written for
 plain Claude Code.
