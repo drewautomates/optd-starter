@@ -37,6 +37,7 @@ python3 backtests/probes.py                # lookahead probes self-test
 | `indicators/python/` | Python reimplementations that must stay in **parity** with the Pine. |
 | `backtests/data.py` | `Bar` (with `up_first`, the intrabar truth) + synthetic sessions (`drift_per_min`) + CSV loader. |
 | `backtests/costs.py` | `Costs` (commission, slippage, contract specs) + the cheat-ladder presets `CHEAT` / `COMMISSION_ONLY` / `FULL`. Test 1. |
+| `risk/` | The rope calculator (`rope_calculator.xlsx`, all formulas) + the floor-and-ratchet checklist. Prop-firm sizing against the drawdown. Built by a script in the upstream project; edit the formulas in the sheet, not here. |
 | `backtests/fills.py` | Fill models — naive (the lie) vs honest. Test 2. |
 | `backtests/drift.py` | The no-signal control (`drift_trade`) + paired scoring against the noise floor (`compare_to_drift`). Test 3. |
 | `backtests/kernels.py` | Validated exit kernels (entry → stop/target → exit price/R) + `validate_kernels()` self-test. `honest_exit_detail` also returns the exit bar index, which the drift control needs. |
