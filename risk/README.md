@@ -12,3 +12,9 @@ Web version, with firm presets that link each figure to the firm's own rules pag
 The math: points to bust = room ÷ (contracts × $ per point). Touching the max-loss line is a bust, so 5 NQ on a $4,500 rope bust on exactly 45 points (5 × 45 × $20), and the most NQ that survive a 45-point move is 4.
 
 Synthetic math, no strategy, no signals. Education, not advice. Practice on SIM.
+
+## Next step
+
+Size settled? The other half is how long you can sit through losing. The [losing-streak simulator](https://onepersontradedesk.com/tools/losing-streak-simulator): your win rate and average win in R in, the streaks and drawdowns out. Free, nothing to install.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=rope-calculator-file&utm_content=next_step)

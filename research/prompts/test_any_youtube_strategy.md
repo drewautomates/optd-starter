@@ -85,3 +85,9 @@ Output: results.md (assumptions, the 7-test table, the grade), trades.csv, equit
 
 - **v1** (video 14): the 8-step prompt the video's test was built from, condensed to one page. Seven tests in
   order (TIME · MATCH · FIT · FILL · FLUKE · COUNT · BENCHMARK), graded "survived to X".
+
+## Next step
+
+Your own strategy passed? Before you trust the number, point the [bias check](../../.claude/skills/bias-check/SKILL.md) at the backtest. It finds the lookahead that turns a loss into a profit, with the file and the line.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=strategy-test-file&utm_content=next_step)

@@ -112,3 +112,9 @@ The one that costs the most time: you change a default and nothing happens. Remo
 ## Versions
 
 - **v1** (2026-10-27): port prompt, compare prompt, the no-source lane.
+
+## Next step
+
+The port matches bar by bar? That proves it's the same indicator, not that trading it does anything. Run it through the [test-any-YouTube-strategy prompt](test_any_youtube_strategy.md): seven tests, against a coin flip.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=pine-port-file&utm_content=next_step)

@@ -72,3 +72,9 @@ signature — if you are unsure one exists, point me at the documentation page.
   missed; the best answer goes into the next version, with credit.
 
 Educational only. SIM by default. Not financial advice.
+
+## Next step
+
+The order manager makes a system safe to run, not worth running. Before you arm anything, point the [bias check](../../.claude/skills/bias-check/SKILL.md) at the backtest behind the signal.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=order-manager-file&utm_content=next_step)

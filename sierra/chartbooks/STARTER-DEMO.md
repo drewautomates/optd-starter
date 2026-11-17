@@ -28,3 +28,9 @@ Check two things before you trust the chart:
 ## Versions
 
 - 2026-11-04 · first version, shipped with the Sierra Chart setup video.
+
+## Next step
+
+Chart running? Next, have Claude Code write your first study: [the Sierra Chart indicator video](https://youtu.be/9l_DITJmeQI). Or port one you already use on TradingView with the [port prompt](../../research/prompts/pine_to_sierra_port.md).
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=starter-chartbook-file&utm_content=next_step)

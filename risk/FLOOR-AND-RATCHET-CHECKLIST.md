@@ -41,3 +41,9 @@ Education, not advice. Set all of this up on SIM first and run it until it's bor
 - [ ] Journal every day: size, max adverse move, where you stopped managing the trade.
 - [ ] Look for the pattern that only shows up written down (mine was green to red: up, stop managing, wait for it to come back).
 - [ ] If the pattern is about you, not the setup, a new strategy won't fix it.
+
+## Next step
+
+Size settled? The other half is how long you can sit through losing. The [losing-streak simulator](https://onepersontradedesk.com/tools/losing-streak-simulator): your win rate and average win in R in, the streaks and drawdowns out. Free, nothing to install.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=rope-calculator-file&utm_content=next_step)

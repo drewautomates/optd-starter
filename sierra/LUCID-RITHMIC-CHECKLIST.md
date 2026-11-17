@@ -96,3 +96,9 @@ CME's nonprofessional check asks for.
 ---
 
 Method free, no signals, no live P&L. Questions about this path go in the video's comments.
+
+## Next step
+
+The route works? Now size it. One order on five accounts means one bad move hits five drawdowns. The [rope calculator](../risk/) shows how many contracts each account can really take.
+
+New tests and tools go to the newsletter first, one short email a week: [onepersontradedesk.com](https://onepersontradedesk.com/resources?utm_source=github&utm_medium=repo&utm_campaign=lucid-checklist-file&utm_content=next_step)
