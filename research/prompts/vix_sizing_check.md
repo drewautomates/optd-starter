@@ -1,6 +1,6 @@
 # Size to the market before the open: the VIX sizing check prompt (v1)
 
-Ships with video 16, [How to Size Trades in a Volatile Market (I Built a VIX Alert With Claude Code)](https://youtu.be/9ueH5JAdfPM).
+Ships with video 16, [How to Size Trades in a Volatile Market (Position Sizing With the VIX + Claude Code)](https://youtu.be/9ueH5JAdfPM).
 One prompt for plain Claude Code. It builds a small Python script you run once before the open. The script pulls
 the free daily VIX and VXN history from Cboe, measures how far the VIX has jumped above its own 20-day average,
 and tells you how many contracts your risk buys at today's ATR.
